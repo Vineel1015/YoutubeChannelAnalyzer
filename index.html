@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Channel Analyzer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .results {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .results h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .results p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube Channel Analyzer</h1>
+        <p>Enter a YouTube Channel ID to analyze its performance.</p>
+        <input type="text" id="channelIdInput" placeholder="Enter Channel ID">
+        <button onclick="analyzeChannel()">Analyze Channel</button>
+        <div class="results" id="results"></div>
+    </div>
+
+    <script>
+        async function analyzeChannel() {
+            const channelId = document.getElementById("channelIdInput").value;
+            const resultsDiv = document.getElementById("results");
+
+            if (!channelId) {
+                resultsDiv.innerHTML = "<p style='color: red;'>Please enter a valid Channel ID.</p>";
+                return;
+            }
+
+            resultsDiv.innerHTML = "<p>Analyzing...</p>";
+
+            try {
+                const response = await fetch("http://127.0.0.1:5000/analyze?channelId=" + channelId);
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultsDiv.innerHTML = `
+                        <h3>Channel Analysis Results</h3>
+                        <p><strong>Channel ID:</strong> ${channelId}</p>
+                        <p><strong>Total Videos:</strong> ${data.total_videos}</p>
+                        <p><strong>Average Views:</strong> ${data.average_views}</p>
+                        <p><strong>Average Likes:</strong> ${data.average_likes}</p>
+                        <p><strong>Average Comments:</strong> ${data.average_comments}</p>
+                        <p><strong>Performance:</strong> ${data.channel_performance}</p>
+                    `;
+                } else {
+                    resultsDiv.innerHTML = `<p style='color: red;'>Error: ${data.message}</p>`;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<p style='color: red;'>Failed to fetch results. Please try again.</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
